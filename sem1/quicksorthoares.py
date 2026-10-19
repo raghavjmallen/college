@@ -2,7 +2,7 @@ import random
 import time
 s = time.perf_counter()
 def hoare_partition(arr, lo, hi):
-    pivot = arr[lo]
+    pivot = arr[lo+(hi-lo)//2]
     i = lo - 1
     j = hi + 1
     while True:
