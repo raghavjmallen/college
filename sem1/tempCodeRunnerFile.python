@@ -1,0 +1,104 @@
+import random
+import time
+
+# ==========================================
+# GENERATE RANDOM INPUT DATASET
+# ==========================================
+# Setting a seed guarantees that arr_counting, arr_radix, and arr_bucket 
+# will all receive the exact same 100 numbers to sort.
+random.seed(42)  
+original_arr = [random.randint(10, 999) for _ in range(100)]
+
+# ==========================================
+# SORTING ALGORITHMS
+# ==========================================
+def counting_sort(arr):
+    if not arr: return
+    max_val, min_val = max(arr), min(arr)
+    range_of_elements = max_val - min_val + 1
+    count_arr = * range_of_elements
+    output_arr = * len(arr)
+    for num in arr:
+        count_arr[num - min_val] += 1
+    for i in range(1, len(count_arr)):
+        count_arr[i] += count_arr[i - 1]
+    for i in range(len(arr) - 1, -1, -1):
+        output_arr[count_arr[arr[i] - min_val] - 1] = arr[i]
+        count_arr[arr[i] - min_val] -= 1
+    for i in range(len(arr)):
+        arr[i] = output_arr[i]
+
+def counting_sort_for_radix(arr, exp):
+    n = len(arr)
+    output = * n
+    count = * 10
+    for i in range(n):
+        count[(arr[i] // exp) % 10] += 1
+    for i in range(1, 10):
+        count[i] += count[i - 1]
+    for i in range(n - 1, -1, -1):
+        index = (arr[i] // exp) % 10
+        output[count[index] - 1] = arr[i]
+        count[index] -= 1
+    for i in range(n):
+        arr[i] = output[i]
+
+def radix_sort_lsd(arr):
+    if not arr: return
+    max_val = max(arr)
+    exp = 1
+    while max_val // exp > 0:
+        counting_sort_for_radix(arr, exp)
+        exp *= 10
+
+def bucket_sort(arr):
+    if len(arr) == 0: return
+    num_buckets = int(len(arr) ** 0.5) + 1
+    max_val, min_val = max(arr), min(arr)
+    val_range = (max_val - min_val) / num_buckets if max_val != min_val else 1
+    buckets = [[] for _ in range(num_buckets)]
+    for num in arr:
+        if num == max_val:
+            bucket_idx = num_buckets - 1
+        else:
+            bucket_idx = int((num - min_val) / val_range)
+        buckets[bucket_idx].append(num)
+    k = 0
+    for bucket in buckets:
+        bucket.sort() 
+        for num in bucket:
+            arr[k] = num
+            k += 1
+
+# ==========================================
+# PERFORMANCE BENCHMARKING
+# ==========================================
+if __name__ == "__main__":
+    
+    # 1. Benchmark Counting Sort
+    arr_counting = original_arr.copy()
+    start = time.perf_counter()
+    counting_sort(arr_counting)
+    end = time.perf_counter()
+    time_counting = (end - start) * 1000  # Convert to milliseconds
+    
+    # 2. Benchmark Radix Sort
+    arr_radix = original_arr.copy()
+    start = time.perf_counter()
+    radix_sort_lsd(arr_radix)
+    end = time.perf_counter()
+    time_radix = (end - start) * 1000
+    
+    # 3. Benchmark Bucket Sort
+    arr_bucket = original_arr.copy()
+    start = time.perf_counter()
+    bucket_sort(arr_bucket)
+    end = time.perf_counter()
+    time_bucket = (end - start) * 1000
+
+    # Print Results
+    print(f"{'Algorithm':<20} | {'Execution Time (ms)':<20}")
+    print("-" * 43)
+    print(f"{'Counting Sort':<20} | {time_counting:.4f} ms")
+    print(f"{'Radix Sort (LSD)':<20} | {time_radix:.4f} ms")
+    print(f"{'Bucket Sort':<20} | {time_bucket:.4f} ms")
