@@ -15,6 +15,7 @@ def weighed_total(mid,final):
                 Final.append([])
                 i+=1
     w=[]
+    print(Final)
     for j in range(0,len(n)):
         w.append(((Mid[j]/30)*0.4+(Final[j]/60)*0.6)*100)
     dict={}
